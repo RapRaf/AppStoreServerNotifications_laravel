@@ -22,6 +22,11 @@ class JWTReader
         return $decoded;
     }
 
+    public static function base64UrlEncode($input)
+    {
+        return rtrim(strtr(base64_encode(json_encode($input, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)), '+/', '-_'), '=');
+    }
+
     public static function decodeJWT($jwt)
     {
         $parts = explode('.', $jwt);

@@ -78,6 +78,10 @@ class AppleNotificationController extends Controller
 
         $purchaseData = $decodedPurchaseJWS['payload'];
 
+        if (($notifyData['environment'] ?? 'Unknown' === 'Sandbox') && config('app.production')) {
+            return $this->forwardToDevServer($request);
+        }
+
         /**
          * YOUR CODE HERE
          * 
@@ -254,7 +258,7 @@ class AppleNotificationController extends Controller
             return false;
         }
 
-        $dataToVerify = $decodedPayload['header'] . '.' . $decodedPayload['payload'];
+        $dataToVerify = JWTReader::base64UrlEncode($decodedPayload['header']) . '.' . JWTReader::base64UrlEncode($decodedPayload['payload']);
 
         $verificationResult = openssl_verify($dataToVerify, $signature, $publicKey, OPENSSL_ALGO_SHA256);
 
